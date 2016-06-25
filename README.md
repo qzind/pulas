@@ -15,5 +15,8 @@ Pulas is a Qt application and Javascript library that allow to print directly fr
   -  build javascript using gulp for optimizing
   -  any suggestion?
 
+### License
+  -  LGPL
+
 ### Author
   -  apin (apin.klas@gmail.com)
