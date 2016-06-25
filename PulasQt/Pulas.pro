@@ -24,4 +24,7 @@ HEADERS  += maindialog.h \
 
 FORMS    += maindialog.ui
 
+win32:RC_FILE = Pulas.rc
+RESOURCES += Pulas.qrc
+
 LIBS += -lKernel32 -lwinspool

@@ -2,6 +2,7 @@
 #define MAINDIALOG_H
 
 #include <QDialog>
+#include <QSystemTrayIcon>
 
 class QWebSocketServer;
 class ClientManager;
@@ -17,15 +18,20 @@ class MainDialog : public QDialog
 public:
     explicit MainDialog(QWidget *parent = 0);
     ~MainDialog();
+    void closeEvent(QCloseEvent * event);
 
 private:
     Ui::MainDialog *ui;
     QWebSocketServer *mServer;
     ClientManager *mClientManager;
+    QSystemTrayIcon *mTray;
 
 private slots:
-    void runServer();
+    bool runServer();
     void newConnection();
+    void aboutQtClicked();
+    void quitClicked();
+    void trayActivated(QSystemTrayIcon::ActivationReason reason);
 };
 
 #endif // MAINDIALOG_H
