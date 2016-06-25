@@ -1,0 +1,149 @@
+<html>
+	<head>
+		<title>Pulas Full Example</title>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+		<script src="../pulas.js"></script>
+	</head>
+	<body>
+		<div class="container" style="margin-top: 20px;">
+			<div class="row">
+				<div class="col-md-6">
+					<div class="panel panel-success">
+						<div class="panel-heading">Status Connection to Pulas app</div>
+						<div class="panel-body" id="status">
+							Not Connected - Make sure the Pulas Qt App is running
+						</div>
+					</div>
+					<div class="panel panel-success">
+						<div class="panel-heading">Setting Printer</div>
+						<div class="panel-body">
+							<div class="row">
+								<div class="col-md-4">
+									Default Printer
+								</div>
+								<div class="col-md-8">
+									<p class="form-control-static" id="defaultPrinter">-</p>
+								</div>
+							</div>
+							<div class="row" style="margin-top: 10px;">
+								<div class="col-md-4">
+									Select Printer
+								</div>
+								<div class="col-md-8">
+									<select class="form-control" id="selectprinter">
+									</select>
+								</div>
+							</div>
+							<div class="row" style="margin-top: 10px;">
+								<div class="col-md-4">
+									Setting
+								</div>
+								<div class="col-md-8">
+									<textarea class="form-control" rows="10" id="textsetting"></textarea>
+								</div>
+							</div>
+							<button class="btn btn-primary pull-right" style="margin-top: 10px;" id='btnUpdate'>Update Config</button>
+						</div>
+					</div>					
+				</div>
+				<div class="col-md-6">
+					<div class="panel panel-success">
+						<div class="panel-heading">Print</div>
+						<div class="panel-body">
+							html / raw command
+							<textarea class="form-control" rows="20" id="textarea"></textarea>
+							<div class="row" style="margin-top: 20px;">
+								<div class="col-md-4">
+									<button class="btn btn-block btn-success" id='print'>Print</button>
+								</div>
+								<div class="col-md-4">
+									<button class="btn btn-block btn-warning" id='printpdf'>Print to PDF</button>
+								</div>
+								<div class="col-md-4">
+									<button class="btn btn-block btn-primary" id='printraw'>Print RAW</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script>
+		var pulas = new Pulas();
+		pulas.connect(function(val) {
+			if(val == 'opened') {
+				$('#status').html('Connected');
+			} else if(val == 'closed') {
+				$('#status').html('Not Connected - Make sure the Pulas Qt App is running');
+			}
+		});
+		pulas.getPrinterList(function(data) {
+			var html = '';
+			for(var i = 0; i < data.data.length; i++) {
+				html += '<option value="' + data.data[i] + '">' + data.data[i] + '</option>';
+			}
+			$('#selectprinter').html(html);
+		});
+		pulas.getDefaultPrinter(function(data) {
+			$('#defaultPrinter').html(data.data);
+		});
+		$( document ).ready(function() {
+			var setting = {
+				papersize: 'A4',
+				unit: 'mm',
+				margin: {
+					top: 10,
+					bottom: 10,
+					left: 10,
+					right: 10
+				},
+				orientation: 'landscape'
+			};
+			$('#textsetting').val(JSON.stringify(setting, null, 4));
+var html = `<style>
+.red {
+	color: red;
+}
+th, td {
+	border-bottom: 1px solid #ddd;
+}
+</style>
+<h2 class="red">This is red text</h2>
+<div>
+<img src="http://i1-linux.softpedia-static.com/screenshots/Qt_1.jpg" width="100" height="100">
+</div>
+<table width="100%">
+<tr>
+<th>Head 1</th>
+<th>Head 2</th>
+<th>Head 3</th>
+</tr>
+<tr>
+<td>Master</td>
+<td>Master</td>
+<td>Master</td>
+</tr>
+</table>`;
+			$('#textarea').val(html);
+		});
+		$('#selectprinter').on('change', function() {
+			pulas.selectPrint(this.value, function(data) { console.log(data); });
+		});
+		$('#btnUpdate').click(function() {
+			var s = JSON.parse($('#textsetting').val());
+			pulas.settingPrinter(s);
+		});
+		$('#print').click(function() {
+			pulas.printHtml($('#textarea').val(), function(data) { console.log(data); } );
+		});
+		$('#printpdf').click(function() {
+			pulas.printHtmlToPdfAndDownload($('#textarea').val());
+		});
+		$('#print').click(function() {
+			pulas.printRaw($('#textarea').val(), function(data) { console.log(data); } );
+		});
+		</script>
+	</body>
+</html>
