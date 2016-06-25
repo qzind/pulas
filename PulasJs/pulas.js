@@ -9,24 +9,31 @@ window.Pulas = function() {
 	this._callback = {};
 	this._queue = [];
 	this._processing = false;
+	this._connectionCallback = null;
 }
 
 Pulas.prototype = {
 	isAvailable: function() {
 		return this.available;
 	},
-	connect: function() {
+	connect: function(callback) {
 		this.ws = new WebSocket('ws://' + this.host + ':' + this.port);
 		this.ws.onopen = this._onopen.bind(this);
 		this.ws.onclose = this._onclose.bind(this);
 		this.ws.onmessage = this._onmessage.bind(this);
+		if(typeof callback != 'undefined')
+			this._connectionCallback = callback;
 	},
 	_onopen: function() {
 		this.available = true;
 		this._shiftQueue();
+		if(this._connectionCallback != null && typeof this._connectionCallback == 'function')
+			this._connectionCallback('opened');
 	},
 	_onclose: function() {
 		this.available = false;
+		if(this._connectionCallback != null && typeof this._connectionCallback == 'function')
+			this._connectionCallback('closed');
 	},
 	_onmessage: function(msg) {
 		var d = JSON.parse(msg.data);
@@ -93,7 +100,7 @@ Pulas.prototype = {
 		this._send({type: MSG_PRINT, data: {data: html, printoutput: "pdf"}},
 			function(data) { that._downloadPdf(data.data); });
 	},
-	printEscp: function(data, callback) {
+	printRaw: function(data, callback) {
 		this._send({type: MSG_PRINT, data: {data: data, printtype: "escp"}}, callback);
 	},
 	_downloadPdf: function(data) {
