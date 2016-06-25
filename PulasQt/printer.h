@@ -35,6 +35,8 @@ private:
     QPrinter::PaperSize mPaperSize;
     QPrinter::Unit mUnit;
     QMarginsF mMargin;
+    QSizeF mPaperCustomSize;
+    bool mIsPaperCustomSize;
     QPrinter::Orientation mOrientation;
     QMap<QString, QPrinter::Unit> mUnitMap;
     QMap<QString, QPrinter::PaperSize> mPaperSizeMap;

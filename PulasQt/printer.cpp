@@ -11,7 +11,8 @@
 
 Printer::Printer(QObject *parent) :
     QObject(parent),
-    mPrinter(new QPrinter(QPrinterInfo::defaultPrinter()))
+    mPrinter(new QPrinter(QPrinterInfo::defaultPrinter())),
+    mIsPaperCustomSize(false)
 {
     mDefaultMargin = 20;
     mPaperSize = QPrinter::A4;
@@ -53,7 +54,15 @@ QVariant Printer::settingPrinter(const QVariant &setting)
     const QVariantMap &m = qvariant_cast<QVariantMap>(setting);
     //check the paper
     if(m.contains("papersize")) {
-        mPaperSize = mPaperSizeMap.value(m.value("paper").toString(), QPrinter::A4);
+        if(m.value("papersize").type() == QVariant::String) {
+            mPaperSize = mPaperSizeMap.value(m.value("paper").toString(), QPrinter::A4);
+            mIsPaperCustomSize = false;
+        } else if(m.value("papersize").canConvert<QVariantMap>()) {
+            const QVariantMap &vm = qvariant_cast<QVariantMap>(m.value("papersize"));
+            mIsPaperCustomSize = true;
+            mPaperCustomSize.setWidth(vm.value("width", QVariant(0.0f)).toFloat());
+            mPaperCustomSize.setHeight(vm.value("height", QVariant(0.0f)).toFloat());
+        }
     }
     //check unit
     if(m.contains("unit")) {
@@ -126,7 +135,12 @@ QVariant Printer::print(const QVariant &data)
 
 void Printer::applySetting()
 {
-    mPrinter->setPageSize(mPaperSize);
+    if(mIsPaperCustomSize) {
+        if(mPaperCustomSize.height() > 0.0f && mPaperCustomSize.width() > 0.0f)
+            mPrinter->setPaperSize(mPaperCustomSize, mUnit);
+    } else {
+        mPrinter->setPageSize(mPaperSize);
+    }
     mPrinter->setPageMargins(mMargin.left(), mMargin.top(), mMargin.right(), mMargin.bottom(), mUnit);
     mPrinter->setOrientation(mOrientation);
 }
