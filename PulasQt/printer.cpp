@@ -167,7 +167,7 @@ bool Printer::waitLoad(QWebFrame *f)
 void Printer::directPrint(const QString &str)
 {
     const QString pName = mPrinter->printerName();
-    LPTSTR printerName = new wchar_t[pName.length()];
+    wchar_t printerName[128];
     pName.toWCharArray(printerName);
     printerName[pName.length()] = '\0';
     LPBYTE lpData;
@@ -176,15 +176,12 @@ void Printer::directPrint(const QString &str)
     DWORD dwCount = ba.length();
 
     DOC_INFO_1 docInfo;
-    const QString docName = "Pulas Document";
-    const QString type = "RAW";
-    docInfo.pDatatype = new wchar_t[type.length()];
-    type.toWCharArray(docInfo.pDatatype);
-    docInfo.pDatatype[type.length()] = '\0';
-    docInfo.pDocName = new wchar_t[docName.length()];
-    docName.toWCharArray(docInfo.pDocName);
-    docInfo.pDocName[docName.length()] = '\0';
+    wchar_t docName[16], dataType[8];
+    wcscpy_s(docName, 100, L"Pulas Document");
+    wcscpy_s(dataType, 100, L"RAW");
     docInfo.pOutputFile = NULL;
+    docInfo.pDocName = docName;
+    docInfo.pDatatype = dataType;
 
     BOOL bStatus = FALSE;
     HANDLE hPrinter = NULL;
@@ -219,8 +216,4 @@ void Printer::directPrint(const QString &str)
     } else {
         bStatus = TRUE;
     }
-
-    delete printerName;
-    delete docInfo.pDatatype;
-    delete docInfo.pDocName;
 }
