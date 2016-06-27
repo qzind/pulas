@@ -17,5 +17,7 @@ namespace MSG_TYPE {
     };
 }
 
+const int TIMEOUT       = 5 * 60 * 1000;
+
 #endif // CONSTANT
 

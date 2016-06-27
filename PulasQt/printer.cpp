@@ -1,4 +1,5 @@
 #include "printer.h"
+#include "constant.h"
 
 #include <QPrinterInfo>
 #include <QVariant>
@@ -7,6 +8,7 @@
 #include <QWebFrame>
 #include <QWebPage>
 #include <QEventLoop>
+#include <QTimer>
 #include <windows.h>
 
 Printer::Printer(QObject *parent) :
@@ -159,7 +161,11 @@ void Printer::initMap()
 bool Printer::waitLoad(QWebFrame *f)
 {
     QEventLoop loopLoad;
+    QTimer timer;
+    timer.setSingleShot(true);
+    timer.start(TIMEOUT);
     QObject::connect(f, SIGNAL(loadFinished(bool)), &loopLoad, SLOT(quit()));
+    QObject::connect(&timer, SIGNAL(timeout()), &loopLoad, SLOT(quit()));
     loopLoad.exec();
     return true;
 }
