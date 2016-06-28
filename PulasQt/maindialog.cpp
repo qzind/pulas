@@ -49,6 +49,11 @@ void MainDialog::closeEvent(QCloseEvent *event)
     event->ignore();
 }
 
+void MainDialog::showTray()
+{
+    mTray->show();
+}
+
 bool MainDialog::runServer()
 {
     return mServer->listen(QHostAddress::Any, SERVER::port);

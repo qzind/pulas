@@ -19,6 +19,7 @@ public:
     explicit MainDialog(QWidget *parent = 0);
     ~MainDialog();
     void closeEvent(QCloseEvent * event);
+    void showTray();
 
 private:
     Ui::MainDialog *ui;
