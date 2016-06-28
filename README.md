@@ -82,7 +82,8 @@ pulas.printHtmlToPdfAndDownload(html, function(value) {
 ```
 Print raw command to printer
 ``` javascript
-pulas.printHtmlToPdfAndDownload(rawcommand, function(value) {
+var rawcommand = '\x1b@This is simple ESCP command';
+pulas.printRaw(rawcommand, function(value) {
 });
 ```
 
