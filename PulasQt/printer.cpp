@@ -253,10 +253,4 @@ void Printer::directPrint(const QString &str)
         // Close the printer handle.
         bStatus = ClosePrinter(hPrinter);
     }
-
-    if (!bStatus || (dwCount != dwBytesWritten)) {
-        bStatus = FALSE;
-    } else {
-        bStatus = TRUE;
-    }
 }
