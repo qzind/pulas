@@ -158,6 +158,16 @@ QVariant Printer::print(const QVariant &data)
     }
 }
 
+QVariant Printer::getSupportedResolution()
+{
+    QList<int> l = mPrinter->supportedResolutions();
+    QVariantList ret;
+    foreach (const int &v, l) {
+        ret.append(QVariant(v));
+    }
+    return QVariant(ret);
+}
+
 void Printer::applySetting()
 {
     if(mIsPaperCustomSize) {

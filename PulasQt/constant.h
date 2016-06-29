@@ -13,7 +13,8 @@ namespace MSG_TYPE {
         MSG_GET_DEFAULT_PRINT,
         MSG_GET_CURRENT_PRINT,
         MSG_SETTING_PRINT,
-        MSG_PRINT
+        MSG_PRINT,
+        MSG_GET_SUPPORTED_RESOLUTION
     };
 }
 

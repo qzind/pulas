@@ -1,6 +1,6 @@
 
 const MSG_UNKNOWN = 0, MSG_LIST_PRINT = 1, MSG_SELECT_PRINT = 2, MSG_GET_DEFAULT_PRINT = 3,
-	MSG_GET_CURRENT_PRINT = 4, MSG_SETTING_PRINT = 5, MSG_PRINT = 6;
+	MSG_GET_CURRENT_PRINT = 4, MSG_SETTING_PRINT = 5, MSG_PRINT = 6, MSG_GET_SUPPORTED_RESOLUTION = 7;
 
 window.Pulas = function() {
 	this.port = 1963;
@@ -78,6 +78,9 @@ Pulas.prototype = {
 	},
 	getCurrentPrinter: function(callback) {
 		this._send({type: MSG_GET_CURRENT_PRINT}, callback);
+	},
+	getSupportedResolution: function(callback) {
+		this._send({type: MSG_GET_SUPPORTED_RESOLUTION}, callback);
 	},
 	/*
 	* available setting object :

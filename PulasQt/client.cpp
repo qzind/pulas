@@ -75,6 +75,10 @@ void Client::textMessageRecieved(const QString &msg)
         {
             v = mPrinter->print(json.value("data", QVariant()));
         } break;
+        case MSG_TYPE::MSG_GET_SUPPORTED_RESOLUTION:
+        {
+            v = mPrinter->getSupportedResolution();
+        } break;
     }
     answer(type, v, token);
 }
