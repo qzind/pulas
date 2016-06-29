@@ -21,6 +21,9 @@ Printer::Printer(QObject *parent) :
     mUnit = QPrinter::Millimeter;
     mMargin = QMarginsF(mDefaultMargin, mDefaultMargin, mDefaultMargin, mDefaultMargin);
     mOrientation = QPrinter::Portrait;
+    mResolution = -1;
+    mColorMode = QPrinter::Color;
+    mPageOrder = QPrinter::FirstPageFirst;
     initMap();
     applySetting();
 }
@@ -81,6 +84,26 @@ QVariant Printer::settingPrinter(const QVariant &setting)
     //check orientation
     if(m.contains("orientation")) {
         mOrientation = mOrientationMap.value(m.value("orientation").toString(), QPrinter::Portrait);
+    }
+    //resolution
+    if(m.contains("resolution")) {
+        mResolution = m.value("resolution").toInt();
+    }
+    //color mode
+    if(m.contains("colormode")) {
+        const QString &cm = m.value("colormode").toString();
+        if(!cm.compare("grayscale"))
+            mColorMode = QPrinter::GrayScale;
+        else if(!cm.compare("color"))
+            mColorMode = QPrinter::Color;
+    }
+    //page order
+    if(m.contains("pageorder")) {
+        const QString &po = m.value("pageorder").toString();
+        if(!po.compare("firsttolast"))
+            mPageOrder = QPrinter::FirstPageFirst;
+        else if(!po.compare("lasttofirst"))
+            mPageOrder  = QPrinter::LastPageFirst;
     }
     applySetting();
     return QVariant(true);
@@ -145,6 +168,10 @@ void Printer::applySetting()
     }
     mPrinter->setPageMargins(mMargin.left(), mMargin.top(), mMargin.right(), mMargin.bottom(), mUnit);
     mPrinter->setOrientation(mOrientation);
+    if(mResolution > 0)
+        mPrinter->setResolution(mResolution);
+    mPrinter->setColorMode(mColorMode);
+    mPrinter->setPageOrder(mPageOrder);
 }
 
 void Printer::initMap()

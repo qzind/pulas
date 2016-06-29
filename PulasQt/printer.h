@@ -38,6 +38,9 @@ private:
     QSizeF mPaperCustomSize;
     bool mIsPaperCustomSize;
     QPrinter::Orientation mOrientation;
+    int mResolution;
+    QPrinter::ColorMode mColorMode;
+    QPrinter::PageOrder mPageOrder;
     QMap<QString, QPrinter::Unit> mUnitMap;
     QMap<QString, QPrinter::PaperSize> mPaperSizeMap;
     QMap<QString, QPrinter::Orientation> mOrientationMap;
