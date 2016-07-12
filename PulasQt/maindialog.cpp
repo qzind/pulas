@@ -10,6 +10,11 @@
 #include <QSystemTrayIcon>
 #include <QDebug>
 
+#include "pdf.h"
+#include <QPrinter>
+#include <QPrinterInfo>
+#include <QPainter>
+
 MainDialog::MainDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::MainDialog),
@@ -80,5 +85,6 @@ void MainDialog::quitClicked()
 
 void MainDialog::trayActivated(QSystemTrayIcon::ActivationReason reason)
 {
+    Q_UNUSED(reason)
     this->show();
 }

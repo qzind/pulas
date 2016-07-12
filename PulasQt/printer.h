@@ -28,6 +28,7 @@ public:
     QVariant settingPrinter(const QVariant &setting);
     QVariant print(const QVariant &data);
     QVariant getSupportedResolution();
+    QVariant printPdf(const QVariant &data);
 
 private:
     qreal mDefaultMargin;

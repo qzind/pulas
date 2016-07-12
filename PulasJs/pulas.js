@@ -1,6 +1,7 @@
 
 const MSG_UNKNOWN = 0, MSG_LIST_PRINT = 1, MSG_SELECT_PRINT = 2, MSG_GET_DEFAULT_PRINT = 3,
-	MSG_GET_CURRENT_PRINT = 4, MSG_SETTING_PRINT = 5, MSG_PRINT = 6, MSG_GET_SUPPORTED_RESOLUTION = 7;
+	MSG_GET_CURRENT_PRINT = 4, MSG_SETTING_PRINT = 5, MSG_PRINT = 6, MSG_GET_SUPPORTED_RESOLUTION = 7,
+	MSG_PRINT_PDF_FILE = 8;
 
 window.Pulas = function() {
 	this.port = 1963;
@@ -108,5 +109,15 @@ Pulas.prototype = {
 	},
 	_downloadPdf: function(data) {
 		window.open('data:application/pdf;base64,' + data, '_blank');
+	},
+	printPdfFile: function(data, config, callback) {
+		var _config = {
+			size: 'actualsize',
+			halign: 'center',
+			valign: 'middle'
+		};
+		var _c = config || _config;
+		_c['data'] = data;
+		this._send({type: MSG_PRINT_PDF_FILE, data: _c}, callback);
 	}
 }

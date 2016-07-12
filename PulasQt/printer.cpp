@@ -1,5 +1,6 @@
 #include "printer.h"
 #include "constant.h"
+#include "pdf.h"
 
 #include <QPrinterInfo>
 #include <QVariant>
@@ -9,6 +10,7 @@
 #include <QWebPage>
 #include <QEventLoop>
 #include <QTimer>
+#include <QPainter>
 #include <windows.h>
 
 Printer::Printer(QObject *parent) :
@@ -166,6 +168,76 @@ QVariant Printer::getSupportedResolution()
         ret.append(QVariant(v));
     }
     return QVariant(ret);
+}
+
+QVariant Printer::printPdf(const QVariant &data)
+{
+    const QVariantMap &json = qvariant_cast<QVariantMap>(data);
+    //printing size : actualsize, fitwidth, fitheight, fitauto
+    //printing position horizontal : left, center, right
+    //printing position vertical : top, middle, bottom
+    QString size = "actualsize";
+    QString hpos = "center";
+    QString vpos = "top";
+    qreal res = mPrinter->resolution();
+    mPrinter->setFullPage(true);
+    mPrinter->setPageMargins(0, 0, 0, 0, mUnit);
+    QMarginsF oldMargin = mMargin;
+    int offx = 0;
+    int offy = 0;
+    const QRectF &paperRect = mPrinter->paperRect(QPrinter::Point);
+    if(json.contains("size")) {
+        size = json.value("size").toString();
+    }
+    if(json.contains("halign")) {
+        hpos = json.value("halign").toString();
+    }
+    if(json.contains("valign")) {
+        vpos = json.value("valign").toString();
+    }
+    //load the pdf
+    Pdf pdf;
+    QPainter painter;
+    if(!pdf.load(json.value("data").toString()) || !painter.begin(mPrinter)) {
+        mPrinter->setPageMargins(oldMargin.left(), oldMargin.top(), oldMargin.right(), oldMargin.bottom(), mUnit);
+        mPrinter->setFullPage(false);
+        return QVariant(false);
+    }
+    for(int i = 0; i < pdf.getNumPage(); i++) {
+        const QSizeF &pageSize = pdf.getPageSize(i);
+        qreal scale = 1.0f;
+        if(!size.compare("fitwidth")) {
+            scale = paperRect.size().width() / pageSize.width();
+        } else if(!size.compare("fitheight")) {
+            scale = paperRect.size().height() / pageSize.height();
+        } else if(!size.compare("fitauto")) {
+            if(paperRect.size().width() / pageSize.width() < paperRect.size().height() / pageSize.height()) {
+                scale = paperRect.size().width() / pageSize.width();
+            } else {
+                scale = paperRect.size().height() / pageSize.height();
+            }
+        }
+        if(!hpos.compare("center")) {
+            offx = (int)((paperRect.size().width() - (scale * pageSize.width())) / 2);
+        } else if(!hpos.compare("right")) {
+            offx = (int)(paperRect.size().width() - (scale * pageSize.width()));
+        }
+        if(!vpos.compare("middle")) {
+            offy = (int)((paperRect.size().height() - (scale * pageSize.height())) / 2);
+        } else if(!vpos.compare("bottom")) {
+            offy = (int)(paperRect.size().height() - (scale * pageSize.height()));
+        }
+        //convert from point to pixel
+        offx = offx * 4 / 3;
+        offy = offy * 4 / 3;
+        pdf.paint(i, &painter, res * scale, -offx, -offy);
+        if(i != pdf.getNumPage() - 1)
+            mPrinter->newPage();
+    }
+    painter.end();
+    mPrinter->setPageMargins(oldMargin.left(), oldMargin.top(), oldMargin.right(), oldMargin.bottom(), mUnit);
+    mPrinter->setFullPage(false);
+    return QVariant(true);
 }
 
 void Printer::applySetting()

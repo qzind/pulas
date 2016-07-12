@@ -79,6 +79,10 @@ void Client::textMessageRecieved(const QString &msg)
         {
             v = mPrinter->getSupportedResolution();
         } break;
+        case MSG_TYPE::MSG_PRINT_PDF_FILE:
+        {
+            v = mPrinter->printPdf(json.value("data"));
+        } break;
     }
     answer(type, v, token);
 }

@@ -49,20 +49,35 @@
 					</div>					
 				</div>
 				<div class="col-md-6">
-					<div class="panel panel-success">
-						<div class="panel-heading">Print</div>
-						<div class="panel-body">
-							html / raw command
-							<textarea class="form-control" rows="20" id="textarea"></textarea>
-							<div class="row" style="margin-top: 20px;">
-								<div class="col-md-4">
-									<button class="btn btn-block btn-success" id='print'>Print</button>
+					<div class="row">
+						<div class="panel panel-success">
+							<div class="panel-heading">Print</div>
+							<div class="panel-body">
+								html / raw command
+								<textarea class="form-control" rows="20" id="textarea"></textarea>
+								<div class="row" style="margin-top: 20px;">
+									<div class="col-md-4">
+										<button class="btn btn-block btn-success" id='print'>Print</button>
+									</div>
+									<div class="col-md-4">
+										<button class="btn btn-block btn-warning" id='printpdf'>Print to PDF</button>
+									</div>
+									<div class="col-md-4">
+										<button class="btn btn-block btn-primary" id='printraw'>Print RAW</button>
+									</div>
 								</div>
-								<div class="col-md-4">
-									<button class="btn btn-block btn-warning" id='printpdf'>Print to PDF</button>
-								</div>
-								<div class="col-md-4">
-									<button class="btn btn-block btn-primary" id='printraw'>Print RAW</button>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="panel panel-success">
+							<div class="panel-heading">Print PDF File</div>
+							<div class="panel-body">
+								<input type="file" id="filePicker">
+								<div class="row" style="margin-top: 20px;">
+									<div class="col-md-4">
+										<button class="btn btn-block btn-success" id='print2'>Print</button>
+									</div>
 								</div>
 							</div>
 						</div>
@@ -141,9 +156,40 @@ th, td {
 		$('#printpdf').click(function() {
 			pulas.printHtmlToPdfAndDownload($('#textarea').val());
 		});
-		$('#print').click(function() {
+		$('#printraw').click(function() {
 			pulas.printRaw($('#textarea').val(), function(data) { console.log(data); } );
 		});
+		$('#print2').click(function() {
+			var config = {
+				size: 'fitauto',
+				halign: 'center',
+				valign: 'top'
+			};
+			pulas.printPdfFile(window.pdfdata, config, function(data) { console.log(data); } );
+		});
+		$('#print2').prop('disabled', true);
+		
+		window.pdfdata = null;
+		var handleFileSelect = function(evt) {
+			var files = evt.target.files;
+			var file = files[0];
+
+			if (files && file) {
+				var reader = new FileReader();
+
+				reader.onload = function(readerEvt) {
+					var binaryString = readerEvt.target.result;
+					window.pdfdata = btoa(binaryString);
+					$('#print2').prop('disabled', false);
+				};
+
+				reader.readAsBinaryString(file);
+			}
+		};
+
+		if (window.File && window.FileReader && window.FileList && window.Blob) {
+			document.getElementById('filePicker').addEventListener('change', handleFileSelect, false);
+		}
 		</script>
 	</body>
 </html>
