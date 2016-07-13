@@ -8,7 +8,7 @@ int main(int argc, char *argv[])
     bool isHide = false;
     a.setApplicationName("Pulas");
     a.setApplicationDisplayName("Pulas");
-    a.setApplicationVersion("0.1");
+    a.setApplicationVersion("0.2");
 
     //check the argument for hiding
     if(argc == 2) {
